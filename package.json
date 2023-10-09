@@ -64,7 +64,7 @@
     "config": "^3.3.9",
     "csv-string": "^4.1.1",
     "discord.js": "^14.13.0",
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.3.2",
     "sitka": "^1.1.1"
   }
 }
