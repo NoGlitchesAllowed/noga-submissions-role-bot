@@ -26,6 +26,7 @@ function mainInterval() {
     })
 }
 
+const notFound = new Set<string>()
 async function mainInterval0(): Promise<void> {
 	if (!client.isReady()) {
     logger.error('Client not ready')
@@ -37,7 +38,7 @@ async function mainInterval0(): Promise<void> {
 	const rowOffset = config.get<number>('rowOffset')
 	const guildId = config.get<string>('guildId')
 	const roleId = config.get<string>('roleId')
-  logger.info('Beginning fetch', { spreadsheet, column, rowOffset, guildId, roleId })
+  logger.debug('Beginning fetch', { spreadsheet, column, rowOffset, guildId, roleId })
 
 	const response = await fetch(spreadsheet)
 	const body = await response.text()
@@ -63,7 +64,10 @@ async function mainInterval0(): Promise<void> {
     .map(discord => {
       const member = memberMap.get(discord)
       if (member === undefined) {
-        logger.warn(`Could not find member with discord name ${discord}`)
+        if (!notFound.has(discord)) {
+          notFound.add(discord)
+          logger.warn(`Could not find member with discord name ${discord}`)
+        }
         return undefined
       }
       if (member.roles.cache.has(roleId)) {
@@ -77,5 +81,5 @@ async function mainInterval0(): Promise<void> {
       logger.info(`Added submitted role to ${member!.user.username}`)
     })
   await Promise.all(promises)
-  logger.info('Fetch has finished')
+  logger.debug('Fetch has finished')
 }
